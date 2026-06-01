@@ -27,30 +27,30 @@ async function joinChannel(channelId) {
     console.log('Join:', data.ok, data.error || '');
     return data.ok;
   } catch(e) {
-    console.log('Join error:', e.message);
+    console.error('Join error:', e.message);
     return false;
   }
 }
 
 async function getSlackMessages() {
   try {
-    const histResp = await fetch('https://slack.com/api/conversations.history?channel=' + EOD_CHANNEL + '&limit=20', {
+    const resp = await fetch('https://slack.com/api/conversations.history?channel=' + EOD_CHANNEL + '&limit=30', {
       headers: { 'Authorization': 'Bearer ' + SLACK_BOT_TOKEN }
     });
-    const histData = await histResp.json();
+    const histData = await resp.json();
     if (!histData.ok) {
       if (histData.error === 'not_in_channel') {
         await joinChannel(EOD_CHANNEL);
-        const retry = await fetch('https://slack.com/api/conversations.history?channel=' + EOD_CHANNEL + '&limit=20', {
+        const retry = await fetch('https://slack.com/api/conversations.history?channel=' + EOD_CHANNEL + '&limit=30', {
           headers: { 'Authorization': 'Bearer ' + SLACK_BOT_TOKEN }
         });
         const retryData = await retry.json();
         if (!retryData.ok) return 'Slack error after join: ' + retryData.error;
-        return (retryData.messages || []).slice(0, 15).map(function(m) { return m.text || ''; }).join('\n---\n');
+        return (retryData.messages || []).slice(0, 20).map(function(m) { return m.text || ''; }).join('\n---\n');
       }
       throw new Error('Slack history error: ' + histData.error);
     }
-    return (histData.messages || []).slice(0, 15).map(function(m) { return m.text || ''; }).join('\n---\n');
+    return (histData.messages || []).slice(0, 20).map(function(m) { return m.text || ''; }).join('\n---\n');
   } catch(e) {
     return 'Slack error: ' + e.message;
   }
@@ -92,15 +92,17 @@ app.post('/api/live-data', async function(req, res) {
     });
     const slackMsgs = await getSlackMessages();
     const setsSheet = await getSheetCSV('1AkxdjAM884izuBY1VQpgfqdbvgUhh1YEGHsLOpSxCqE');
-    const cashSheet = await getSheetCSV('1B6QTcC5elS8GSy0dszGVWMPQeDczy01i-4DDDvaQzyU');
+
     const prompt = 'Today is ' + today + ' EST. You are Brandon Arellano performance assistant.' +
       ' Analyze data and respond ONLY in JSON with no explanation.' +
       '\n\nSLACK messages:\n' + slackMsgs.slice(0, 3000) +
       '\n\nBrandon sets sheet (CSV):\n' + setsSheet.slice(0, 2000) +
-      '\n\nCash MTD sheet (CSV):\n' + cashSheet.slice(0, 2000) +
-      '\n\nExtract: closer EODs last 48h (Victor,Thomas,Luke,Joohan), Brandon sets this week, Brandon personal cash MTD, team cash MTD.' +
-      ' JSON: {"week_sets":<n>,"brandon_personal_cash_mtd":<n>,"team_cash_mtd":<n>,' +
-      '"closer_eods":[{"closer":"","date":"","calls":<n>,"offers":<n>,"closes":<n>,"cash_today":<n>,"cash_mtd":<n>,"brandon_leads":[]}]}';
+      '\n\nExtract: closer EODs last 48h (Victor,Thomas,Luke,Joohan), Brandon sets this week.' +
+      ' For team_cash_mtd: sum the MOST RECENT cash_mtd from each unique closer name (deduplicate - one entry per closer, use the latest).' +
+      ' For brandon_personal_cash_mtd: if Brandon posted an EOD message with his own cash data use it, else null.' +
+      ' Return ONLY this JSON (numbers not strings, no markdown): {"week_sets":<n>,"brandon_personal_cash_mtd":<n or null>,"team_cash_mtd":<n>,' +
+      '"closer_eods":[{"closer":"","date":"","calls":<n>,"offers":<n>,"closes":<n>,"cash_today":<n>,"cash_mtd":<n>,"brandon_leads":[{"name":"","outcome":"","closed":<bool>}]}]}';
+
     const data = await callClaude([{ role: 'user', content: prompt }]);
     const text = (data.content || []).filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text || ''; }).join('');
     const parsed = extractJSON(text);
@@ -108,12 +110,12 @@ app.post('/api/live-data', async function(req, res) {
       res.json({ success: true, data: parsed });
     } else {
       res.json({ success: false, error: 'Could not parse', raw: text.slice(0, 300),
-        data: { week_sets: 0, brandon_personal_cash_mtd: 0, team_cash_mtd: 0, closer_eods: [] } });
+        data: { week_sets: 0, brandon_personal_cash_mtd: null, team_cash_mtd: 0, closer_eods: [] } });
     }
   } catch (err) {
     console.error('Error:', err.message);
     res.json({ success: false, error: err.message,
-      data: { week_sets: 0, brandon_personal_cash_mtd: 0, team_cash_mtd: 0, closer_eods: [] } });
+      data: { week_sets: 0, brandon_personal_cash_mtd: null, team_cash_mtd: 0, closer_eods: [] } });
   }
 });
 
