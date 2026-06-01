@@ -97,16 +97,38 @@ app.post('/api/live-data', async function(req, res) {
       ' Analyze data and respond ONLY in JSON with no explanation.' +
       '\n\nSLACK messages:\n' + slackMsgs.slice(0, 3000) +
       '\n\nBrandon sets sheet (CSV):\n' + setsSheet.slice(0, 2000) +
-      '\n\nExtract: closer EODs last 48h (Victor,Thomas,Luke,Joohan), Brandon sets this week.' +
-      ' For team_cash_mtd: sum the MOST RECENT cash_mtd from each unique closer name (deduplicate - one entry per closer, use the latest).' +
-      ' For brandon_personal_cash_mtd: if Brandon posted an EOD message with his own cash data use it, else null.' +
-      ' Return ONLY this JSON (numbers not strings, no markdown): {"week_sets":<n>,"brandon_personal_cash_mtd":<n or null>,"team_cash_mtd":<n>,' +
-      '"closer_eods":[{"closer":"","date":"","calls":<n>,"offers":<n>,"closes":<n>,"cash_today":<n>,"cash_mtd":<n>,"brandon_leads":[{"name":"","outcome":"","closed":<bool>}]}]}';
+      '\n\nInstructions:' +
+      '\n1. Extract closer EODs from the last 48 hours (closers are Victor, Thomas, Luke, Joohan - not Brandon).' +
+      '\n2. For each EOD, extract: closer name, date, calls taken, offers made, closes made, cash today, cash MTD, and brandon_leads (leads Brandon set that appear in this EOD with outcome and whether closed).' +
+      '\n3. Deduplicate: if same closer posted twice on same date, keep BOTH entries as separate EODs.' +
+      '\n4. Count Brandon sets this week from the CSV sheet (rows where SDR Name = Brandon, date within current week Mon-Sun).' +
+      '\n5. team_cash_mtd = sum the MOST RECENT (latest) cash_mtd from each UNIQUE closer. If Luke appears twice with different cash_mtd, use the highest value for Luke only.' +
+      '\n6. brandon_personal_cash_mtd: look at ALL brandon_leads across ALL EODs where closed=true this month. This represents cash Brandon personally generated as a setter. If none found, return null.' +
+      '\n\nReturn ONLY this JSON (use numbers not strings, no markdown, no backticks):' +
+      '\n{"week_sets":<n>,"brandon_personal_cash_mtd":<n or null>,"team_cash_mtd":<n>,' +
+      '"closer_eods":[{"closer":"","date":"YYYY-MM-DD","calls":<n>,"offers":<n>,"closes":<n>,"cash_today":<n>,"cash_mtd":<n>,"brandon_leads":[{"name":"","outcome":"","closed":<bool>}]}]}';
 
     const data = await callClaude([{ role: 'user', content: prompt }]);
     const text = (data.content || []).filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text || ''; }).join('');
     const parsed = extractJSON(text);
     if (parsed) {
+      // Post-process: calculate brandon_personal_cash_mtd from brandon_leads if null
+      if (parsed.brandon_personal_cash_mtd === null && parsed.closer_eods) {
+        // Count closed brandon leads across all EODs as indicator of Brandon's production
+        let closedLeads = 0;
+        parsed.closer_eods.forEach(function(eod) {
+          if (eod.brandon_leads) {
+            eod.brandon_leads.forEach(function(lead) {
+              if (lead.closed) closedLeads++;
+            });
+          }
+        });
+        // If we have closed leads, note it exists but exact $ not available
+        if (closedLeads > 0) {
+          parsed.brandon_personal_cash_mtd = 0; // placeholder - data not in source
+          parsed.brandon_closed_leads_mtd = closedLeads;
+        }
+      }
       res.json({ success: true, data: parsed });
     } else {
       res.json({ success: false, error: 'Could not parse', raw: text.slice(0, 300),
