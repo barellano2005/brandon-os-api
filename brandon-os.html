@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brandon OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07080A;
+  --bg2: #0D1018;
+  --bg3: #12161F;
+  --bg4: #181D28;
+  --border: #1E2535;
+  --border2: #252E40;
+  --gold: #C8A84B;
+  --gold2: #E8C96A;
+  --gold-dim: rgba(200,168,75,0.1);
+  --green: #2ECC8A;
+  --green-dim: rgba(46,204,138,0.1);
+  --red: #E05555;
+  --red-dim: rgba(224,85,85,0.1);
+  --blue: #4A8FE8;
+  --blue-dim: rgba(74,143,232,0.1);
+  --purple: #8B6FE8;
+  --purple-dim: rgba(139,111,232,0.1);
+  --amber: #E8922A;
+  --amber-dim: rgba(232,146,42,0.1);
+  --teal: #2EC8C0;
+  --teal-dim: rgba(46,200,192,0.1);
+  --text: #EEF0F5;
+  --text2: #5A6478;
+  --text3: #272F3E;
+  font-size: 14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+input,select,button,textarea{font-family:'Syne',sans-serif;}
+
+/* HEADER */
+.hdr{background:rgba(7,8,10,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+.hdr-left .brand{font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-family:'DM Mono',monospace;}
+.hdr-left .name{font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.live-pill{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(46,204,138,0.2);border-radius:99px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+.hdr-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
+
+/* NAV */
+.nav{background:rgba(7,8,10,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 20px;position:sticky;top:57px;z-index:99;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-tab{padding:12px 14px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.nav-tab:hover:not(.active){color:var(--text2);}
+
+/* PANELS */
+.panel{display:none;padding:20px;}
+.panel.active{display:block;}
+
+/* LABELS */
+.slbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin:20px 0 10px;}
+.slbl:first-child{margin-top:0;}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.card-title{font-size:13px;font-weight:700;}
+.card-body{padding:14px 16px;}
+
+/* METRICS */
+.grid{display:grid;gap:8px;margin-bottom:12px;}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:repeat(2,1fr);}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;position:relative;overflow:hidden;}
+.metric::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.m-gold::after{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.m-green::after{background:var(--green);}
+.m-red::after{background:var(--red);}
+.m-blue::after{background:var(--blue);}
+.m-purple::after{background:var(--purple);}
+.m-amber::after{background:var(--amber);}
+.m-teal::after{background:var(--teal);}
+.mlbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.mval{font-size:22px;font-weight:800;line-height:1;color:var(--text);}
+.mval.gold{color:var(--gold);}
+.mval.green{color:var(--green);}
+.mval.red{color:var(--red);}
+.mval.blue{color:var(--blue);}
+.mval.amber{color:var(--amber);}
+.msub{font-size:10px;color:var(--text3);margin-top:4px;}
+.mdelta{font-size:10px;font-weight:700;margin-top:3px;}
+.mdelta.good{color:var(--green);}
+.mdelta.bad{color:var(--red);}
+.mdelta.warn{color:var(--amber);}
+
+/* PROGRESS */
+.prog-row{margin-bottom:12px;}
+.prog-row:last-child{margin-bottom:0;}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.prog-lbl{font-size:12px;font-weight:700;}
+.prog-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.prog-track{background:var(--bg4);border-radius:99px;height:5px;overflow:hidden;}
+.prog-fill{height:5px;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.pf-gold{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.pf-green{background:var(--green);}
+.pf-blue{background:var(--blue);}
+.pf-purple{background:var(--purple);}
+.pf-red{background:var(--red);}
+.pf-amber{background:var(--amber);}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:8px 14px;border-bottom:1px solid var(--border);}
+.tbl td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td.good{color:var(--green);font-weight:700;}
+.tbl td.bad{color:var(--red);font-weight:700;}
+.tbl td.warn{color:var(--amber);font-weight:700;}
+.tbl td.gold{color:var(--gold);font-weight:700;}
+.tbl td.muted{color:var(--text2);}
+
+/* INPUTS */
+.inp{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;color:var(--text);width:100%;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--gold);}
+.inp::placeholder{color:var(--text3);font-weight:400;}
+.inp-mono{font-family:'DM Mono',monospace;font-size:16px;}
+.btn{padding:10px 18px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-gold{background:var(--gold);color:#07080A;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-sec{background:var(--bg3);color:var(--text2);border:1px solid var(--border2);}
+.btn-sec:hover{border-color:var(--text3);color:var(--text);}
+.btn-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,85,85,0.2);}
+
+/* PILLS */
+.pill{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.06em;}
+.pill-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,204,138,0.2);}
+.pill-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,85,85,0.2);}
+.pill-gold{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(200,168,75,0.2);}
+.pill-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(232,146,42,0.2);}
+.pill-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,143,232,0.2);}
+
+/* BOX */
+.box{border-radius:12px;padding:13px 15px;margin-bottom:10px;font-size:12px;line-height:1.7;}
+.box strong{color:var(--text);}
+.box.gold{background:var(--gold-dim);border:1px solid rgba(200,168,75,0.2);color:#A89060;}
+.box.green{background:var(--green-dim);border:1px solid rgba(46,204,138,0.15);color:#4A8870;}
+.box.red{background:var(--red-dim);border:1px solid rgba(224,85,85,0.15);color:#A06060;}
+.box.amber{background:var(--amber-dim);border:1px solid rgba(232,146,42,0.15);color:#A07840;}
+.box.blue{background:var(--blue-dim);border:1px solid rgba(74,143,232,0.15);color:#4A6888;}
+
+/* WEEK BARS */
+.week-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;}
+.wday{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.wday-name{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.wday-bar-wrap{height:60px;display:flex;align-items:flex-end;width:100%;}
+.wday-bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .8s cubic-bezier(.4,0,.2,1);}
+.wday-num{font-size:13px;font-weight:800;}
+
+/* FOOD LOG */
+.food-item{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.food-item:last-child{border-bottom:none;}
+.fi-name{font-size:13px;font-weight:600;}
+.fi-macros{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;}
+.fi-kcal{font-size:13px;font-weight:600;color:var(--amber);font-family:'DM Mono',monospace;}
+.fi-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;}
+.fi-del:hover{color:var(--red);background:var(--red-dim);}
+
+/* MACRO CARDS */
+.macro-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center;position:relative;overflow:hidden;}
+.macro-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;}
+.mc-kcal::after{background:var(--amber);}
+.mc-prot::after{background:var(--green);}
+.mc-carb::after{background:var(--blue);}
+.mc-fat::after{background:var(--purple);}
+.mc-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-family:'DM Mono',monospace;}
+.mc-val{font-size:20px;font-weight:800;line-height:1;}
+.mc-kcal .mc-val{color:var(--amber);}
+.mc-prot .mc-val{color:var(--green);}
+.mc-carb .mc-val{color:var(--blue);}
+.mc-fat .mc-val{color:var(--purple);}
+.mc-goal{font-size:9px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace;}
+
+/* TRADE LOG */
+.trade-item{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.trade-item:last-child{border-bottom:none;}
+.ti-left .ti-pair{font-size:13px;font-weight:700;}
+.ti-left .ti-date{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;}
+.ti-pnl{font-size:14px;font-weight:800;font-family:'DM Mono',monospace;}
+
+/* VISION */
+.vision-block{background:linear-gradient(135deg,var(--gold-dim),transparent);border:1px solid rgba(200,168,75,0.2);border-radius:14px;padding:20px;margin-bottom:12px;}
+.vision-title{font-size:18px;font-weight:800;color:var(--gold);margin-bottom:8px;}
+.vision-text{font-size:13px;line-height:1.8;color:var(--text2);}
+
+/* SCHEDULE */
+.sched-item{display:flex;align-items:stretch;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:6px;}
+.si-bar{width:3px;flex-shrink:0;}
+.si-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:72px;padding:10px;border-right:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;}
+.si-content{padding:9px 12px;flex:1;background:var(--bg2);}
+.si-name{font-size:12px;font-weight:700;}
+.si-desc{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* COMP RESULT */
+.comp-result{background:linear-gradient(135deg,var(--gold-dim),transparent);border:1px solid rgba(200,168,75,0.2);border-radius:14px;padding:16px;margin-bottom:12px;}
+.comp-total{font-size:36px;font-weight:900;color:var(--gold);line-height:1;}
+.comp-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.cb-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;}
+.cb-lbl{font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+
+/* PEPTIDE */
+.pep-row{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.pep-row:last-child{border-bottom:none;}
+.pr-name{font-size:13px;font-weight:600;}
+.pr-note{font-size:11px;color:var(--text3);margin-top:2px;}
+.pr-dose{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;color:var(--teal);}
+.pr-time{font-size:10px;color:var(--text3);}
+
+@media(max-width:600px){
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:repeat(2,1fr);}
+  .comp-breakdown{grid-template-columns:repeat(2,1fr);}
+  .week-bars{gap:3px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="brand">Brandon OS</div>
+    <div class="name">Miami // 20</div>
+  </div>
+  <div class="hdr-right">
+    <div class="live-pill"><span class="live-dot"></span>Live</div>
+    <div class="hdr-time" id="hdrTime">--</div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-tab active" onclick="showTab('sales')">Sales</div>
+  <div class="nav-tab" onclick="showTab('comp')">Comp</div>
+  <div class="nav-tab" onclick="showTab('fitness')">Fitness</div>
+  <div class="nav-tab" onclick="showTab('nutrition')">Nutrition</div>
+  <div class="nav-tab" onclick="showTab('health')">Health</div>
+  <div class="nav-tab" onclick="showTab('trading')">Trading</div>
+  <div class="nav-tab" onclick="showTab('cfo')">CFO</div>
+  <div class="nav-tab" onclick="showTab('vision')">Vision</div>
+  <div class="nav-tab" onclick="showTab('schedule')">Schedule</div>
+</div>
+
+<!-- SALES -->
+<div class="panel active" id="tab-sales">
+  <div class="slbl">This week</div>
+  <div class="grid g4">
+    <div class="metric m-gold">
+      <div class="mlbl">Sets / Week</div>
+      <div class="mval gold" id="sWeekSets">0</div>
+      <div class="msub">Target: 14</div>
+      <div class="mdelta" id="sWeekDelta">—</div>
+    </div>
+    <div class="metric m-blue">
+      <div class="mlbl">Messages</div>
+      <div class="mval blue" id="sMsgs">0</div>
+      <div class="msub">Target: 600/day</div>
+    </div>
+    <div class="metric m-amber">
+      <div class="mlbl">Offers</div>
+      <div class="mval amber" id="sOffers">0</div>
+      <div class="msub">Target: 5-6/day</div>
+    </div>
+    <div class="metric m-red">
+      <div class="mlbl">CRM Reset</div>
+      <div class="mval red" id="sCRM">--:--</div>
+      <div class="msub">8PM EST daily</div>
+    </div>
+  </div>
+
+  <div class="slbl">Log today</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid g3" style="margin-bottom:10px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Messages</div><input class="inp inp-mono" id="inMsgs" type="number" placeholder="0"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Sets Today</div><input class="inp inp-mono" id="inSets" type="number" placeholder="0"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Offers</div><input class="inp inp-mono" id="inOffers" type="number" placeholder="0"></div>
+      </div>
+      <div class="grid g2" style="margin-bottom:10px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Contacts</div><input class="inp inp-mono" id="inContacts" type="number" placeholder="0"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Personal Cash MTD ($)</div><input class="inp inp-mono" id="inCash" type="number" placeholder="0"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-gold" style="flex:1;" onclick="updateSales()">Update</button>
+        <button class="btn btn-sec" onclick="resetDay()">Reset Day</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slbl">Progress</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="prog-row">
+        <div class="prog-top"><span class="prog-lbl">Messages</span><span class="prog-num" id="pMsgNum">0 / 600</span></div>
+        <div class="prog-track"><div class="prog-fill pf-blue" id="pMsgBar" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-top"><span class="prog-lbl">Sets this week</span><span class="prog-num" id="pWeekNum">0 / 14</span></div>
+        <div class="prog-track"><div class="prog-fill pf-gold" id="pWeekBar" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-top"><span class="prog-lbl">Personal cash MTD</span><span class="prog-num" id="pCashNum">$0 / $150k</span></div>
+        <div class="prog-track"><div class="prog-fill pf-green" id="pCashBar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slbl">Week chart</div>
+  <div class="week-bars" id="weekBars"></div>
+
+  <div class="slbl">Log week sets</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid" style="grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px;" id="weekInputs"></div>
+      <button class="btn btn-gold" style="width:100%;" onclick="saveWeek()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMP -->
+<div class="panel" id="tab-comp">
+  <div class="slbl">Live calculator</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid g2" style="margin-bottom:10px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Personal Cash ($)</div><input class="inp inp-mono" id="cPersonal" type="number" placeholder="0" oninput="calcComp()"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Team Cash ($)</div><input class="inp inp-mono" id="cTeam" type="number" placeholder="0" oninput="calcComp()"></div>
+      </div>
+    </div>
+  </div>
+  <div class="comp-result">
+    <div style="font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:6px;">Estimated Paycheck</div>
+    <div class="comp-total" id="compTotal">$1,500</div>
+    <div class="comp-breakdown">
+      <div><div class="cb-val" id="cbPersonal">$0</div><div class="cb-lbl">Personal</div></div>
+      <div><div class="cb-val" id="cbTeam">$0</div><div class="cb-lbl">Team Bonus</div></div>
+      <div><div class="cb-val">$1,500</div><div class="cb-lbl">Base</div></div>
+    </div>
+  </div>
+  <div class="slbl">Tier status</div>
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Tier</th><th>Threshold</th><th>Rate</th><th>Status</th></tr>
+      <tr><td>Personal standard</td><td>Under $150k</td><td>5%</td><td id="t5">—</td></tr>
+      <tr><td>Personal unlocked</td><td>Over $150k</td><td class="good">6%</td><td id="t6">—</td></tr>
+      <tr><td>Team tier 1</td><td>$100k+</td><td>2%</td><td id="tT1">—</td></tr>
+      <tr><td>Team tier 2</td><td>$150k+</td><td>2.5%</td><td id="tT2">—</td></tr>
+      <tr><td>Team tier 3</td><td>$200k+</td><td class="good">3%</td><td id="tT3">—</td></tr>
+    </table>
+  </div>
+  <div class="slbl">Scenarios</div>
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Scenario</th><th>Personal</th><th>Team</th><th>Paycheck</th></tr>
+      <tr><td class="muted">Current avg</td><td class="bad">$62k</td><td>$52k</td><td class="bad">~$5,600</td></tr>
+      <tr><td class="muted">Jan best</td><td class="warn">$119k</td><td>$109k</td><td class="warn">$9,626</td></tr>
+      <tr><td class="muted">Target A</td><td class="good">$150k</td><td>$175k</td><td class="good">$14,875</td></tr>
+      <tr><td class="muted">Elite month</td><td class="good">$175k</td><td>$200k</td><td class="good">$18,000</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- FITNESS -->
+<div class="panel" id="tab-fitness">
+  <div class="slbl">Stats</div>
+  <div class="grid g3">
+    <div class="metric m-green">
+      <div class="mlbl">Weight</div>
+      <div class="mval green" id="fWeight">135</div>
+      <div class="msub">lbs · baseline</div>
+    </div>
+    <div class="metric m-gold">
+      <div class="mlbl">Body Fat</div>
+      <div class="mval gold" id="fBF">—</div>
+      <div class="msub">Target: 12%</div>
+    </div>
+    <div class="metric m-blue">
+      <div class="mlbl">To Goal</div>
+      <div class="mval blue" id="fWeeks">—</div>
+      <div class="msub">weeks at current rate</div>
+    </div>
+  </div>
+
+  <div class="slbl">Log stats</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid g3" style="margin-bottom:10px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Weight (lbs)</div><input class="inp inp-mono" id="lWeight" type="number" placeholder="135" step="0.1"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Body Fat %</div><input class="inp inp-mono" id="lBF" type="number" placeholder="e.g. 18" step="0.1"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Notes</div><input class="inp" id="lNotes" placeholder="fasted, morning..."></div>
+      </div>
+      <button class="btn btn-gold" style="width:100%;" onclick="logBody()">Log</button>
+    </div>
+  </div>
+
+  <div class="slbl">History</div>
+  <div class="card" id="bodyHistCard">
+    <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No entries yet.</div>
+  </div>
+
+  <div class="slbl">Training split</div>
+  <div id="splitBlocks"></div>
+</div>
+
+<!-- NUTRITION -->
+<div class="panel" id="tab-nutrition">
+  <div class="slbl" id="dayTypeLbl">Today's targets</div>
+  <div class="grid g4">
+    <div class="macro-card mc-kcal"><div class="mc-lbl">Calories</div><div class="mc-val" id="nKcal">2325</div><div class="mc-goal" id="nKcalG">/ 2325</div><div class="prog-track" style="margin-top:6px;"><div class="prog-fill pf-amber" id="nKcalBar" style="width:0%"></div></div></div>
+    <div class="macro-card mc-prot"><div class="mc-lbl">Protein</div><div class="mc-val" id="nProt">160</div><div class="mc-goal" id="nProtG">/ 160g</div><div class="prog-track" style="margin-top:6px;"><div class="prog-fill pf-green" id="nProtBar" style="width:0%"></div></div></div>
+    <div class="macro-card mc-carb"><div class="mc-lbl">Carbs</div><div class="mc-val" id="nCarb">275</div><div class="mc-goal" id="nCarbG">/ 275g</div><div class="prog-track" style="margin-top:6px;"><div class="prog-fill pf-blue" id="nCarbBar" style="width:0%"></div></div></div>
+    <div class="macro-card mc-fat"><div class="mc-lbl">Fat</div><div class="mc-val" id="nFat">65</div><div class="mc-goal" id="nFatG">/ 65g</div><div class="prog-track" style="margin-top:6px;"><div class="prog-fill pf-purple" id="nFatBar" style="width:0%"></div></div></div>
+  </div>
+
+  <div class="slbl">Add food</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+        <input class="inp" id="fName" placeholder="Food name">
+        <input class="inp" id="fKcal" type="number" placeholder="kcal">
+        <input class="inp" id="fProt" type="number" placeholder="protein">
+        <input class="inp" id="fCarb" type="number" placeholder="carbs">
+        <input class="inp" id="fFat2" type="number" placeholder="fat">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-gold" style="flex:1;" onclick="addFood()">+ Add</button>
+        <button class="btn btn-sec" onclick="clearFood()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slbl">Food log</div>
+  <div class="card" id="foodLog">
+    <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No food logged yet.</div>
+  </div>
+</div>
+
+<!-- HEALTH -->
+<div class="panel" id="tab-health">
+  <div class="slbl">Active peptide stack</div>
+  <div class="card">
+    <div class="pep-row"><div><div class="pr-name">GHK-Cu</div><div class="pr-note">Daily — collagen + tissue repair</div></div><div style="text-align:right;"><div class="pr-dose">2mg</div><div class="pr-time">Morning · Daily</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">Tesamorelin</div><div class="pr-note">4x/week — fat loss, visceral fat, ab definition. Stack with Ipa.</div></div><div style="text-align:right;"><div class="pr-dose">2mg</div><div class="pr-time">Morning · Mon/Wed/Fri/Sat</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">Semax</div><div class="pr-note">Focus + BDNF. Morning only — never after 3PM. Alternate with Selank.</div></div><div style="text-align:right;"><div class="pr-dose">200-300mcg</div><div class="pr-time">Morning · Outreach days</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">Selank</div><div class="pr-note">Calm focus, anxiety regulation. Alternate with Semax — use on rest/recovery days.</div></div><div style="text-align:right;"><div class="pr-dose">250mcg</div><div class="pr-time">Morning · Rest days</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">NAD+</div><div class="pr-note">Cellular energy, DNA repair, mitochondrial function. Stacks with MOTS-C. Start 250mg, build to 500mg.</div></div><div style="text-align:right;"><div class="pr-dose">250-500mg</div><div class="pr-time">Morning · 2-3x/week</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">BPC-157</div><div class="pr-note">Recovery, gut health, immunity. Good to run while sick.</div></div><div style="text-align:right;"><div class="pr-dose">250mcg</div><div class="pr-time">Daily</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">MOTS-C</div><div class="pr-note">Metabolic function, insulin sensitivity, recomp. Stacks with NAD+.</div></div><div style="text-align:right;"><div class="pr-dose">10mg</div><div class="pr-time">2-3x/week · Morning</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">TB-500</div><div class="pr-note">Recovery, inflammation, flexibility. Loading phase first.</div></div><div style="text-align:right;"><div class="pr-dose">2.5mg</div><div class="pr-time">2x/week loading → 1x/week maintenance</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">Retatrutide ⚠️</div><div class="pr-note">Back on. Appetite suppression hits Tue-Thu — FORCE protein those days.</div></div><div style="text-align:right;"><div class="pr-dose">1.5-2mg</div><div class="pr-time">Tuesday only</div></div></div>
+    <div class="pep-row"><div><div class="pr-name">Ipamorelin</div><div class="pr-note">Amplifies natural GH sleep pulse. Empty stomach — last meal 2hrs before pinning.</div></div><div style="text-align:right;"><div class="pr-dose">200mcg</div><div class="pr-time">Before bed · Daily</div></div></div>
+  </div>
+  <div class="box amber"><strong>Ipa rule:</strong> Last meal must be 2+ hours before pinning. If bed is 3AM — last meal by 1AM. Water only after that.</div>
+  <div class="box green"><strong>Tesam + Ipa synergy:</strong> These hit two different receptors simultaneously. Together = significantly larger GH pulse than either alone.</div>
+
+  <div class="slbl">Log symptom / note</div>
+  <div class="card">
+    <div class="card-body">
+      <div style="margin-bottom:8px;"><input class="inp" id="hNote" placeholder="e.g. Energy good, sleep 7hrs, no side effects..."></div>
+      <button class="btn btn-gold" style="width:100%;" onclick="logHealth()">Log</button>
+    </div>
+  </div>
+  <div class="card" id="healthLog">
+    <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No health notes yet.</div>
+  </div>
+</div>
+
+<!-- TRADING -->
+<div class="panel" id="tab-trading">
+  <div class="slbl">P&L summary</div>
+  <div class="grid g3">
+    <div class="metric m-green">
+      <div class="mlbl">MTD P&L</div>
+      <div class="mval green" id="tMTD">$0</div>
+      <div class="msub">This month</div>
+    </div>
+    <div class="metric m-gold">
+      <div class="mlbl">Total P&L</div>
+      <div class="mval gold" id="tTotal">$0</div>
+      <div class="msub">All time</div>
+    </div>
+    <div class="metric m-blue">
+      <div class="mlbl">Win Rate</div>
+      <div class="mval blue" id="tWR">—</div>
+      <div class="msub">of closed trades</div>
+    </div>
+  </div>
+
+  <div class="slbl">Log trade</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid g2" style="margin-bottom:8px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Pair / Asset</div><input class="inp" id="tPair" placeholder="e.g. NQ, BTC, EUR/USD"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">P&L ($)</div><input class="inp inp-mono" id="tPnl" type="number" placeholder="+500 or -200"></div>
+      </div>
+      <div class="grid g2" style="margin-bottom:8px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Setup</div><input class="inp" id="tSetup" placeholder="e.g. Breakout, VWAP, ICT"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Notes</div><input class="inp" id="tNotes" placeholder="What happened?"></div>
+      </div>
+      <button class="btn btn-gold" style="width:100%;" onclick="logTrade()">Log Trade</button>
+    </div>
+  </div>
+
+  <div class="slbl">Trade journal</div>
+  <div class="card" id="tradeLog">
+    <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No trades logged yet.</div>
+  </div>
+</div>
+
+<!-- CFO -->
+<div class="panel" id="tab-cfo">
+  <div class="slbl">Monthly P&L</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid g2" style="margin-bottom:10px;">
+        <div><div class="slbl" style="margin:0 0 5px;">Gross income this month ($)</div><input class="inp inp-mono" id="cIncome" type="number" placeholder="0" oninput="calcCFO()"></div>
+        <div><div class="slbl" style="margin:0 0 5px;">Trading P&L this month ($)</div><input class="inp inp-mono" id="cTrading" type="number" placeholder="0" oninput="calcCFO()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:10px;">
+    <div class="card-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">Rent + utilities</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$3,200</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">Car payment</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$600</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">Food / DoorDash</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$500</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">Entertainment</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$200</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">Subscriptions</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$70</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px;"><span style="color:var(--text2);">Gas + misc</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$350</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;border-top:1px solid var(--border2);margin-top:6px;font-size:13px;font-weight:700;"><span>Total burn</span><span style="color:var(--red);font-family:'DM Mono',monospace;">-$4,920</span></div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,var(--gold-dim),transparent);border:1px solid rgba(200,168,75,0.2);border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+    <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(200,168,75,0.1);"><span style="color:var(--text2);">Gross income</span><span style="font-family:'DM Mono',monospace;color:var(--green);" id="cfGross">$0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(200,168,75,0.1);"><span style="color:var(--text2);">Tax reserve (28%)</span><span style="font-family:'DM Mono',monospace;color:var(--red);" id="cfTax">-$0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(200,168,75,0.1);"><span style="color:var(--text2);">Net after tax</span><span style="font-family:'DM Mono',monospace;" id="cfNet">$0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(200,168,75,0.1);"><span style="color:var(--text2);">Fixed expenses</span><span style="font-family:'DM Mono',monospace;color:var(--red);">-$4,920</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(200,168,75,0.1);"><span style="color:var(--text2);">Trading P&L</span><span style="font-family:'DM Mono',monospace;" id="cfTrade">$0</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 0 0;border-top:1px solid rgba(200,168,75,0.2);margin-top:4px;"><span style="font-size:13px;font-weight:700;">Monthly surplus</span><span style="font-size:22px;font-weight:900;font-family:'DM Mono',monospace;" id="cfSurplus">$0</span></div>
+  </div>
+
+  <div class="slbl">Break-even table</div>
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Income</th><th>After Tax</th><th>After Expenses</th><th>Status</th></tr>
+      <tr><td>$5,000</td><td>$3,600</td><td class="bad">-$1,320</td><td><span class="pill pill-red">Deficit</span></td></tr>
+      <tr><td>$6,245</td><td>$4,496</td><td class="bad">-$424</td><td><span class="pill pill-red">Underwater</span></td></tr>
+      <tr><td>$8,000</td><td>$5,760</td><td class="warn">+$840</td><td><span class="pill pill-amber">Tight</span></td></tr>
+      <tr><td>$10,000</td><td>$7,200</td><td class="good">+$2,280</td><td><span class="pill pill-green">Saving</span></td></tr>
+      <tr><td>$15,000</td><td>$10,050</td><td class="good">+$5,130</td><td><span class="pill pill-green">Building</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- VISION -->
+<div class="panel" id="tab-vision">
+  <div class="vision-block">
+    <div class="vision-title">Miami Brandon — The Vision</div>
+    <div class="vision-text">You wake up at 8:30AM in the Panorama. Floor to ceiling windows, Biscayne Bay out front. The city is already moving below you but your morning is yours.<br><br>First hour — trading. Calm, focused, no rush. You've put in the reps. You know what you're doing.<br><br>Your Porsche convertible is parked downstairs. Top down, Miami sun. Gym whenever you want — not scrambling at 7:30PM.<br><br>50k people on Instagram who followed the journey. Dubai. Italy. Portugal. Wherever the wind takes you.<br><br>You're not famous. But you're known. In the rooms that matter — people know your name and what you stand for.</div>
+  </div>
+
+  <div class="slbl">Goals</div>
+  <div class="grid g2">
+    <div class="metric m-gold"><div class="mlbl">Income Target</div><div class="mval gold">$15k</div><div class="msub">per month consistently</div></div>
+    <div class="metric m-blue"><div class="mlbl">Instagram</div><div class="mval blue">50k</div><div class="msub">followers — document the journey</div></div>
+    <div class="metric m-green"><div class="mlbl">Next Home</div><div class="mval green" style="font-size:15px;">Panorama</div><div class="msub">Brickell — the next move</div></div>
+    <div class="metric m-purple"><div class="mlbl">Next Car</div><div class="mval" style="color:var(--purple);font-size:15px;">Porsche</div><div class="msub">Convertible — earned it</div></div>
+  </div>
+
+  <div class="slbl">Wins log</div>
+  <div class="card">
+    <div class="card-body">
+      <div style="margin-bottom:8px;"><input class="inp" id="winInput" placeholder="Log a win — big or small..."></div>
+      <button class="btn btn-gold" style="width:100%;" onclick="logWin()">Log Win</button>
+    </div>
+  </div>
+  <div class="card" id="winLog">
+    <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No wins logged yet. Start now.</div>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="panel" id="tab-schedule">
+  <div class="slbl">Daily schedule</div>
+  <div id="scheduleEl"></div>
+  <div class="slbl" style="margin-top:20px;">Training split</div>
+  <div id="splitEl"></div>
+</div>
+
+<script>
+// STATE
+const S = {
+  msgs:0,sets:0,offers:0,contacts:0,cash:0,
+  week:{mon:0,tue:0,wed:0,thu:0,fri:0,sat:0,sun:0},
+  body:[],foods:[],trades:[],health:[],wins:[]
+};
+
+function load(){
+  try{const r=localStorage.getItem('brandon_os_v1');if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+  renderAll();
+}
+function save(){try{localStorage.setItem('brandon_os_v1',JSON.stringify(S));}catch(e){}}
+
+// TABS
+function showTab(t){
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${t}')"]`).classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+// TIMER
+function tick(){
+  const now=new Date();
+  const est=new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const reset=new Date(est);reset.setHours(20,0,0,0);
+  if(est>=reset)reset.setDate(reset.getDate()+1);
+  const diff=reset-est;
+  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  const str=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const el=document.getElementById('sCRM');
+  if(el){el.textContent=str;el.className='mval '+(h<2?'red':'blue');}
+  const days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const t2=document.getElementById('hdrTime');
+  if(t2)t2.textContent=`${days[est.getDay()]} ${months[est.getMonth()]} ${est.getDate()} · ${est.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'})} EST`;
+}
+
+// SALES
+function updateSales(){
+  S.msgs=+document.getElementById('inMsgs').value||0;
+  S.sets=+document.getElementById('inSets').value||0;
+  S.offers=+document.getElementById('inOffers').value||0;
+  S.contacts=+document.getElementById('inContacts').value||0;
+  S.cash=+document.getElementById('inCash').value||0;
+  const today=['sun','mon','tue','wed','thu','fri','sat'][new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})).getDay()];
+  S.week[today]=S.sets;
+  save();renderAll();
+}
+function resetDay(){
+  S.msgs=0;S.sets=0;S.offers=0;S.contacts=0;
+  ['inMsgs','inSets','inOffers','inContacts'].forEach(id=>document.getElementById(id).value='');
+  save();renderAll();
+}
+function buildWeekInputs(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const keys=['mon','tue','wed','thu','fri','sat','sun'];
+  document.getElementById('weekInputs').innerHTML=days.map((d,i)=>`
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">${d}</div>
+      <input class="inp inp-mono" id="wi-${keys[i]}" type="number" placeholder="0" min="0" value="${S.week[keys[i]]||0}" style="padding:8px;font-size:14px;">
+    </div>`).join('');
+}
+function saveWeek(){
+  const keys=['mon','tue','wed','thu','fri','sat','sun'];
+  keys.forEach(k=>{const el=document.getElementById('wi-'+k);if(el)S.week[k]=+el.value||0;});
+  save();renderAll();
+}
+
+// COMP
+function calcComp(){
+  const p=+document.getElementById('cPersonal').value||0;
+  const t=+document.getElementById('cTeam').value||0;
+  const pRate=p>=150000?0.06:0.05;
+  const tBonus=t>=200000?t*0.03:t>=150000?t*0.025:t>=100000?t*0.02:0;
+  const personal=p*pRate;
+  const total=1500+personal+tBonus;
+  document.getElementById('compTotal').textContent='$'+Math.round(total).toLocaleString();
+  document.getElementById('cbPersonal').textContent='$'+Math.round(personal).toLocaleString();
+  document.getElementById('cbTeam').textContent='$'+Math.round(tBonus).toLocaleString();
+  const pill=(active,text)=>active?`<span class="pill pill-green">✓ ${text}</span>`:`<span class="pill pill-red">✗ Locked</span>`;
+  document.getElementById('t5').innerHTML=pill(p<150000&&p>0,'Active');
+  document.getElementById('t6').innerHTML=pill(p>=150000,'Unlocked 🔓');
+  document.getElementById('tT1').innerHTML=pill(t>=100000,'Active');
+  document.getElementById('tT2').innerHTML=pill(t>=150000,'Active');
+  document.getElementById('tT3').innerHTML=pill(t>=200000,'Active');
+}
+
+// CFO
+function calcCFO(){
+  const inc=+document.getElementById('cIncome').value||0;
+  const trading=+document.getElementById('cTrading').value||0;
+  const tax=inc*0.28;const net=inc-tax;
+  const surplus=net-4920+trading;
+  document.getElementById('cfGross').textContent='$'+Math.round(inc).toLocaleString();
+  document.getElementById('cfTax').textContent='-$'+Math.round(tax).toLocaleString();
+  document.getElementById('cfNet').textContent='$'+Math.round(net).toLocaleString();
+  document.getElementById('cfTrade').textContent=(trading>=0?'+$':'-$')+Math.abs(Math.round(trading)).toLocaleString();
+  document.getElementById('cfTrade').style.color=trading>=0?'var(--green)':'var(--red)';
+  const el=document.getElementById('cfSurplus');
+  el.textContent=(surplus>=0?'+$':'-$')+Math.abs(Math.round(surplus)).toLocaleString();
+  el.style.color=surplus>=0?'var(--green)':surplus>-500?'var(--amber)':'var(--red)';
+}
+
+// BODY
+function logBody(){
+  const w=parseFloat(document.getElementById('lWeight').value);if(!w)return;
+  const bf=parseFloat(document.getElementById('lBF').value)||null;
+  const notes=document.getElementById('lNotes').value||'';
+  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/New_York'});
+  S.body.unshift({date:today,weight:w,bf,notes,id:Date.now()});
+  ['lWeight','lBF','lNotes'].forEach(id=>document.getElementById(id).value='');
+  save();renderAll();
+}
+
+// NUTRITION
+function getDayType(){
+  const day=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/New_York'});
+  if(['Monday','Wednesday','Friday'].includes(day))return 'train';
+  if(day==='Tuesday')return 'reta';
+  return 'rest';
+}
+function getTargets(t){
+  if(t==='train')return{kcal:2325,prot:160,carb:275,fat:65};
+  if(t==='reta')return{kcal:2000,prot:150,carb:240,fat:60};
+  return{kcal:2100,prot:150,carb:255,fat:62};
+}
+function addFood(){
+  const name=document.getElementById('fName').value.trim();if(!name)return;
+  S.foods.push({name,kcal:+document.getElementById('fKcal').value||0,prot:+document.getElementById('fProt').value||0,carb:+document.getElementById('fCarb').value||0,fat:+document.getElementById('fFat2').value||0,id:Date.now()});
+  ['fName','fKcal','fProt','fCarb','fFat2'].forEach(id=>document.getElementById(id).value='');
+  save();renderAll();
+}
+function clearFood(){S.foods=[];save();renderAll();}
+function removeFood(id){S.foods=S.foods.filter(f=>f.id!==id);save();renderAll();}
+
+// TRADING
+function logTrade(){
+  const pair=document.getElementById('tPair').value.trim();if(!pair)return;
+  const pnl=parseFloat(document.getElementById('tPnl').value)||0;
+  const setup=document.getElementById('tSetup').value||'';
+  const notes=document.getElementById('tNotes').value||'';
+  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/New_York'});
+  S.trades.unshift({date:today,pair,pnl,setup,notes,id:Date.now()});
+  ['tPair','tPnl','tSetup','tNotes'].forEach(id=>document.getElementById(id).value='');
+  save();renderAll();
+}
+
+// HEALTH
+function logHealth(){
+  const note=document.getElementById('hNote').value.trim();if(!note)return;
+  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/New_York'});
+  S.health.unshift({date:today,note,id:Date.now()});
+  document.getElementById('hNote').value='';
+  save();renderAll();
+}
+
+// WINS
+function logWin(){
+  const win=document.getElementById('winInput').value.trim();if(!win)return;
+  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/New_York'});
+  S.wins.unshift({date:today,win,id:Date.now()});
+  document.getElementById('winInput').value='';
+  save();renderAll();
+}
+
+// RENDER
+function renderAll(){
+  const weekTotal=Object.values(S.week).reduce((a,b)=>a+b,0);
+  const today=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})).toLocaleDateString('en-US',{weekday:'long',timeZone:'America/New_York'});
+
+  // SALES
+  document.getElementById('sWeekSets').textContent=weekTotal;
+  document.getElementById('sMsgs').textContent=S.msgs;
+  document.getElementById('sOffers').textContent=S.offers;
+  const sd=document.getElementById('sWeekDelta');
+  const needed=Math.max(0,14-weekTotal);
+  if(weekTotal>=14){sd.textContent='✓ Target hit';sd.className='mdelta good';}
+  else{sd.textContent=`${needed} more needed`;sd.className='mdelta '+(weekTotal>=10?'warn':'bad');}
+
+  // Progress
+  document.getElementById('pMsgBar').style.width=Math.min(S.msgs/600*100,100)+'%';
+  document.getElementById('pMsgNum').textContent=`${S.msgs} / 600`;
+  document.getElementById('pWeekBar').style.width=Math.min(weekTotal/14*100,100)+'%';
+  document.getElementById('pWeekNum').textContent=`${weekTotal} / 14`;
+  document.getElementById('pCashBar').style.width=Math.min(S.cash/150000*100,100)+'%';
+  document.getElementById('pCashNum').textContent=`$${S.cash.toLocaleString()} / $150k`;
+
+  // Week bars
+  const days2=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const keys=['mon','tue','wed','thu','fri','sat','sun'];
+  const todayKey=keys[['sun','mon','tue','wed','thu','fri','sat'].indexOf(['sun','mon','tue','wed','thu','fri','sat'][new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'})).getDay()])];
+  document.getElementById('weekBars').innerHTML=days2.map((d,i)=>{
+    const v=S.week[keys[i]]||0;
+    const pct=Math.min(v/6*100,100);
+    const col=v>=3?'var(--green)':v>=2?'var(--gold)':v>=1?'var(--amber)':'var(--bg4)';
+    const isT=keys[i]===todayKey;
+    return`<div class="wday">
+      <div class="wday-name" style="${isT?'color:var(--gold)':''}">${d}</div>
+      <div class="wday-bar-wrap"><div class="wday-bar" style="height:${Math.max(pct,4)}%;background:${col};"></div></div>
+      <div class="wday-num" style="color:${v>0?'var(--text)':'var(--text3)'}">${v}</div>
+    </div>`;
+  }).join('');
+  buildWeekInputs();
+
+  // Body
+  if(S.body.length>0){
+    const l=S.body[0];
+    document.getElementById('fWeight').textContent=l.weight;
+    if(l.bf){
+      document.getElementById('fBF').textContent=l.bf+'%';
+      const gap=l.bf-12;
+      document.getElementById('fWeeks').textContent=gap<=0?'Done!':Math.ceil(gap/0.5);
+    }
+    document.getElementById('bodyHistCard').innerHTML=S.body.slice(0,8).map(e=>`
+      <div style="display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);">${e.date}</span>
+        <span style="font-weight:700;">${e.weight} lbs</span>
+        <span style="color:var(--text2);">${e.bf?e.bf+'% bf':'—'}</span>
+        <span style="color:var(--text3);">${e.notes}</span>
+      </div>`).join('');
+  }
+
+  // Nutrition
+  const dt=getDayType();
+  const T=getTargets(dt);
+  const labels={train:`Training Day (${today})`,reta:`Reta Day — Minimum (${today})`,rest:`Rest Day (${today})`};
+  document.getElementById('dayTypeLbl').textContent=labels[dt];
+  document.getElementById('nKcalG').textContent=`/ ${T.kcal}`;
+  document.getElementById('nProtG').textContent=`/ ${T.prot}g`;
+  document.getElementById('nCarbG').textContent=`/ ${T.carb}g`;
+  document.getElementById('nFatG').textContent=`/ ${T.fat}g`;
+  const tot=S.foods.reduce((a,f)=>({kcal:a.kcal+f.kcal,prot:a.prot+f.prot,carb:a.carb+f.carb,fat:a.fat+f.fat}),{kcal:0,prot:0,carb:0,fat:0});
+  const fields=[{k:'kcal',t:T.kcal,vId:'nKcal',bId:'nKcalBar',cls:'pf-amber'},{k:'prot',t:T.prot,vId:'nProt',bId:'nProtBar',cls:'pf-green'},{k:'carb',t:T.carb,vId:'nCarb',bId:'nCarbBar',cls:'pf-blue'},{k:'fat',t:T.fat,vId:'nFat',bId:'nFatBar',cls:'pf-purple'}];
+  fields.forEach(f=>{
+    const logged=tot[f.k],remain=Math.max(0,f.t-logged),over=logged>f.t;
+    document.getElementById(f.vId).textContent=over?`+${logged-f.t}`:remain;
+    document.getElementById(f.bId).style.width=Math.min(logged/f.t*100,100)+'%';
+    document.getElementById(f.bId).className='prog-fill '+(over?'pf-red':f.cls);
+  });
+  document.getElementById('foodLog').innerHTML=S.foods.length===0?'<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No food logged yet.</div>':S.foods.map(f=>`
+    <div class="food-item">
+      <div><div class="fi-name">${f.name}</div><div class="fi-macros">P:${f.prot}g · C:${f.carb}g · F:${f.fat}g</div></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span class="fi-kcal">${f.kcal}</span><button class="fi-del" onclick="removeFood(${f.id})">×</button></div>
+    </div>`).join('');
+
+  // Trading
+  const mtdPnl=S.trades.reduce((a,t)=>a+t.pnl,0);
+  const wins=S.trades.filter(t=>t.pnl>0).length;
+  const wr=S.trades.length>0?Math.round(wins/S.trades.length*100):null;
+  document.getElementById('tMTD').textContent=(mtdPnl>=0?'+$':'-$')+Math.abs(Math.round(mtdPnl)).toLocaleString();
+  document.getElementById('tMTD').className='mval '+(mtdPnl>=0?'green':'red');
+  document.getElementById('tTotal').textContent=(mtdPnl>=0?'+$':'-$')+Math.abs(Math.round(mtdPnl)).toLocaleString();
+  document.getElementById('tWR').textContent=wr!==null?wr+'%':'—';
+  document.getElementById('tradeLog').innerHTML=S.trades.length===0?'<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No trades logged yet.</div>':S.trades.slice(0,15).map(t=>`
+    <div class="trade-item">
+      <div class="ti-left"><div class="ti-pair">${t.pair}${t.setup?' · '+t.setup:''}</div><div class="ti-date">${t.date}${t.notes?' · '+t.notes:''}</div></div>
+      <div class="ti-pnl" style="color:${t.pnl>=0?'var(--green)':'var(--red)'}">${t.pnl>=0?'+':''} $${Math.abs(t.pnl).toLocaleString()}</div>
+    </div>`).join('');
+
+  // Health
+  document.getElementById('healthLog').innerHTML=S.health.length===0?'<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No health notes yet.</div>':S.health.slice(0,10).map(h=>`
+    <div style="display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;">
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:60px;">${h.date}</span>
+      <span style="color:var(--text2);flex:1;margin-left:10px;">${h.note}</span>
+    </div>`).join('');
+
+  // Wins
+  document.getElementById('winLog').innerHTML=S.wins.length===0?'<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No wins logged yet. Start now.</div>':S.wins.slice(0,15).map(w=>`
+    <div style="display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;">
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:60px;">${w.date}</span>
+      <span style="color:var(--text2);">🏆 ${w.win}</span>
+    </div>`).join('');
+
+  // Schedule
+  const SCHED=[
+    {time:'11:00 AM',name:'🌅 Wake + Morning Protocol',desc:'Hydrate · GHK-Cu 2mg · Tesamorelin 2mg (Mon/Wed/Fri/Sat) · Semax 200-300mcg (outreach days) OR Selank 250mcg (rest days) · NAD+ 250-500mg (2-3x/week) · BPC-157 250mcg · MOTS-C 10mg (2-3x/week)',col:'var(--green)'},
+    {time:'11:30 AM',name:'💰 Outreach Block 1',desc:'150-200 messages · DO NOT DISTURB · OJ sipping throughout',col:'var(--gold)'},
+    {time:'2:00 PM',name:'💰 Outreach Block 2',desc:'Follow-ups + inbound · Make offers · Work warm convos',col:'var(--gold)'},
+    {time:'4:30 PM',name:'🥩 Lunch + Break',desc:'Ribeye + rice + sweet potato puffs · Force protein · OJ',col:'var(--green)'},
+    {time:'5:30 PM',name:'Admin + Errands',desc:'Non-revenue tasks only · Prep tomorrow pipeline',col:'var(--text3)'},
+    {time:'7:30 PM',name:'💪 Gym',desc:'Mon/Wed/Fri — Full body split (Dorian Saraci)',col:'var(--blue)'},
+    {time:'9:00 PM',name:'🧠 Skill Block',desc:'Scripts · Objections · Phone setter review · Mon/Wed/Fri',col:'var(--purple)'},
+    {time:'1:00 AM',name:'🍽️ Last Meal Cutoff',desc:'If bed is 3AM — stop eating by 1AM. Water only after. Required for Ipamorelin GH pulse.',col:'var(--amber)'},
+    {time:'2:00 AM',name:'📊 EOD Review',desc:'Log EOD in Mark\'s tracker · Trade journal · Week set count',col:'var(--amber)'},
+    {time:'2:45 AM',name:'💉 Ipamorelin',desc:'200mcg subQ · Empty stomach (2hrs after last meal) · Amplifies GH sleep pulse with Tesamorelin',col:'var(--teal)'},
+    {time:'3:00 AM',name:'😴 Sleep',desc:'7-8hrs minimum · Tuesday: pin Reta 1.5-2mg anytime today · TB-500 2.5mg 2x/week loading',col:'var(--text3)'},
+  ];
+  document.getElementById('scheduleEl').innerHTML=SCHED.map(b=>`
+    <div class="sched-item">
+      <div class="si-bar" style="background:${b.col};"></div>
+      <div class="si-time">${b.time}</div>
+      <div class="si-content"><div class="si-name">${b.name}</div><div class="si-desc">${b.desc}</div></div>
+    </div>`).join('');
+
+  const SPLIT=[
+    {day:'Monday',focus:'Full Body A — Strength + Upper',type:'train'},
+    {day:'Tuesday',focus:'Active Rest · Reta day — force protein',type:'rest'},
+    {day:'Wednesday',focus:'Full Body B — Variation',type:'train'},
+    {day:'Thursday',focus:'Rest',type:'rest'},
+    {day:'Friday',focus:'Full Body C — Volume',type:'train'},
+    {day:'Saturday',focus:'Active Rest — Walk',type:'rest'},
+    {day:'Sunday',focus:'Full Rest + Weekly Review',type:'rest'},
+  ];
+  document.getElementById('splitEl').innerHTML=SPLIT.map(s=>`
+    <div class="sched-item" style="${s.day===today?'border-color:var(--gold);':''}">
+      <div class="si-bar" style="background:${s.type==='train'?'var(--green)':'var(--text3)'};"></div>
+      <div class="si-time" style="${s.day===today?'color:var(--gold);':''}">${s.day}${s.day===today?' ★':''}</div>
+      <div class="si-content"><div class="si-name">${s.focus}</div><div class="si-desc">${s.type==='train'?'💪 Training day':'😴 Rest day'}</div></div>
+    </div>`).join('');
+
+  const splitPanel=document.getElementById('splitBlocks');
+  if(splitPanel)splitPanel.innerHTML=document.getElementById('splitEl').innerHTML;
+}
+
+// ── LIVE DATA ──
+const RAILWAY_URL = 'https://brandon-os-api-production.up.railway.app/api/live-data';
+
+// Inject live data UI into Sales tab
+function injectApiUI(){
+  const salesPanel = document.getElementById('tab-sales');
+  const apiDiv = document.createElement('div');
+  apiDiv.innerHTML = `
+    <div class="slbl">Live data</div>
+    <div class="card">
+      <div class="card-body">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-gold" style="flex:1;" onclick="fetchLiveData()">🔄 Refresh Live Data</button>
+        </div>
+        <div id="liveStatus" style="font-size:11px;color:var(--text3);margin-top:8px;font-family:'DM Mono',monospace;"></div>
+      </div>
+    </div>
+    <div class="slbl">Closer EODs</div>
+    <div class="card" id="liveEODs">
+      <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">Hit Refresh to load today's closer EODs.</div>
+    </div>
+    <div class="slbl">Live comp</div>
+    <div class="card" id="liveComp">
+      <div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">Hit Refresh to load your MTD cash and comp.</div>
+    </div>
+  `;
+  salesPanel.insertBefore(apiDiv, salesPanel.firstChild);
+}
+
+function setStatus(msg, color='var(--text3)'){
+  const el = document.getElementById('liveStatus');
+  if(el){el.textContent=msg;el.style.color=color;}
+}
+
+async function fetchLiveData(){
+  setStatus('Fetching live data...','var(--amber)');
+  try {
+    const res = await fetch(RAILWAY_URL, { method: 'POST' });
+    if(!res.ok) throw new Error(`Server error ${res.status}`);
+    const json = await res.json();
+    if(!json.success) throw new Error(json.error || 'Server returned failure');
+    const parsed = json.data;
+
+    // Update week sets
+    if(parsed.week_sets !== undefined){
+      S.week_sets_live = parsed.week_sets;
+      const el = document.getElementById('sWeekSets');
+      if(el) el.textContent = parsed.week_sets;
+      document.getElementById('pWeekBar').style.width = Math.min(parsed.week_sets/14*100,100)+'%';
+      document.getElementById('pWeekNum').textContent = `${parsed.week_sets} / 14`;
+      const sd = document.getElementById('sWeekDelta');
+      const needed = Math.max(0,14-parsed.week_sets);
+      if(parsed.week_sets>=14){sd.textContent='✓ Target hit';sd.className='mdelta good';}
+      else{sd.textContent=`${needed} more needed`;sd.className='mdelta '+(parsed.week_sets>=10?'warn':'bad');}
+    }
+
+    // Update comp
+    if(parsed.brandon_personal_cash_mtd !== undefined){
+      S.cash = parsed.brandon_personal_cash_mtd;
+      document.getElementById('pCashBar').style.width = Math.min(S.cash/150000*100,100)+'%';
+      document.getElementById('pCashNum').textContent = `$${S.cash.toLocaleString()} / $150k`;
+      document.getElementById('cPersonal').value = S.cash;
+    }
+    if(parsed.team_cash_mtd !== undefined){
+      document.getElementById('cTeam').value = parsed.team_cash_mtd;
+    }
+    calcComp();
+
+    // Render closer EODs
+    if(parsed.closer_eods && parsed.closer_eods.length > 0){
+      document.getElementById('liveEODs').innerHTML = parsed.closer_eods.map(e=>`
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="font-size:13px;font-weight:700;">${e.closer} <span style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">${e.date}</span></div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--green);">$${(e.cash_today||0).toLocaleString()} today</div>
+          </div>
+          <div style="display:flex;gap:12px;font-size:11px;color:var(--text3);margin-bottom:6px;">
+            <span>📞 ${e.calls} calls</span>
+            <span>🎯 ${e.offers} offers</span>
+            <span>✅ ${e.closes} closes</span>
+            <span style="color:var(--gold);">MTD: $${(e.cash_mtd||0).toLocaleString()}</span>
+          </div>
+          ${e.brandon_leads && e.brandon_leads.length > 0 ? `
+            <div style="background:var(--gold-dim);border-radius:6px;padding:6px 10px;font-size:11px;color:var(--gold);">
+              <strong>Your sets:</strong> ${e.brandon_leads.join(' · ')}
+            </div>` : ''}
+        </div>`).join('') + `<div style="padding:10px 14px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">Last updated: ${new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York'})} EST</div>`;
+    } else {
+      document.getElementById('liveEODs').innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3);">No EODs found in last 48hrs.</div>';
+    }
+
+    // Update live comp card
+    document.getElementById('liveComp').innerHTML = `
+      <div style="padding:12px 14px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text2);">Brandon personal cash MTD</span>
+          <span style="color:var(--green);font-family:'DM Mono',monospace;font-weight:700;">$${(parsed.brandon_personal_cash_mtd||0).toLocaleString()}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text2);">Team cash MTD (setter team)</span>
+          <span style="color:var(--blue);font-family:'DM Mono',monospace;font-weight:700;">$${(parsed.team_cash_mtd||0).toLocaleString()}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text2);">Estimated paycheck</span>
+          <span style="color:var(--gold);font-family:'DM Mono',monospace;font-weight:700;" id="livePaycheck">calculating...</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;">
+          <span style="color:var(--text2);">6% rate status</span>
+          <span style="font-family:'DM Mono',monospace;" id="live6pct">—</span>
+        </div>
+      </div>`;
+
+    // Calculate live paycheck
+    const p = parsed.brandon_personal_cash_mtd||0;
+    const t = parsed.team_cash_mtd||0;
+    const pRate = p>=150000?0.06:0.05;
+    const tBonus = t>=200000?t*0.03:t>=150000?t*0.025:t>=100000?t*0.02:0;
+    const paycheck = 1500 + (p*pRate) + tBonus;
+    const pc = document.getElementById('livePaycheck');
+    const p6 = document.getElementById('live6pct');
+    if(pc) pc.textContent = '$'+Math.round(paycheck).toLocaleString();
+    if(p6) p6.innerHTML = p>=150000 ? '<span class="pill pill-green">🔓 Unlocked</span>' : `<span class="pill pill-red">$${(150000-p).toLocaleString()} away</span>`;
+
+    save();
+    setStatus(`✓ Updated at ${new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York'})} EST`,'var(--green)');
+
+  } catch(err){
+    setStatus('Error: '+err.message,'red');
+    console.error(err);
+  }
+}
+
+load();tick();setInterval(tick,1000);
+injectApiUI();
+// Auto-fetch on load
+setTimeout(fetchLiveData, 1000);
+</script>
+</body>
+</html>
